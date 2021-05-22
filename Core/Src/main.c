@@ -27,7 +27,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdint.h>
+#include <stdbool.h>
+#include "fatfs.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,7 +49,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+bool bSDPresent = false;
+FATFS FatFs;
+FRESULT fResult;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -94,6 +98,36 @@ int main(void)
   MX_SPI1_Init();
   MX_FATFS_Init();
   /* USER CODE BEGIN 2 */
+
+  /*
+   * Tests
+   */
+
+  // Mount SD Card
+  if(FR_OK == f_mount(&FatFs, "", 1)) {
+	bSDPresent = true;
+  }
+
+  if(bSDPresent == true) {
+    FIL fp;
+    // Open the file for writting
+    fResult = f_open(&fp, "testFile.txt", FA_OPEN_ALWAYS | FA_READ | FA_WRITE);
+
+    // Writing data to file
+    if(fResult == FR_OK) {
+      uint8_t u8BytesWritten = 0;
+      uint8_t u8ToWrite[] = "Hello file\n";
+   	  fResult = f_write(&fp, u8ToWrite, sizeof(u8ToWrite), &u8BytesWritten);
+    }
+
+    // Closing our written file
+    fResult = f_close(&fp);
+  }
+
+  // Unmount SD Card
+  if(bSDPresent == true) {
+	f_mount(NULL, "", 0);
+  }
 
   /* USER CODE END 2 */
 
