@@ -30,6 +30,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "fatfs.h"
+#include "sd_hal_mpu6050.h"
+#include "string.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,6 +54,8 @@
 bool bSDPresent = false;
 FATFS FatFs;
 FRESULT fResult;
+SD_MPU6050 mpu6050;
+SD_MPU6050_Result mpuResult;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -100,9 +104,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   /*
-   * Tests
+   * Tests SD card peripheral
    */
 
+  /*
   // Mount SD Card
   if(FR_OK == f_mount(&FatFs, "", 1)) {
 	bSDPresent = true;
@@ -127,6 +132,30 @@ int main(void)
   // Unmount SD Card
   if(bSDPresent == true) {
 	f_mount(NULL, "", 0);
+  }
+  */
+
+  /*
+   * Test MPU6050 peripheral
+   */
+  uint8_t buffer[128];
+  int len;
+  uint32_t u32LastRead = 0;
+  mpuResult = SD_MPU6050_Init(&hi2c1, &mpu6050, SD_MPU6050_Device_0, SD_MPU6050_Accelerometer_2G, SD_MPU6050_Gyroscope_250s);
+  SD_MPU6050_SetDataRate(&hi2c1, &mpu6050, SD_MPU6050_DataRate_1KHz);
+  HAL_Delay(500); // Wait init
+  if(mpuResult == SD_MPU6050_Result_Ok) {
+	  while(1) {
+		  mpuResult = SD_MPU6050_ReadAll(&hi2c1, &mpu6050);
+		  if(mpuResult == SD_MPU6050_Result_Ok) {
+			  len = snprintf(buffer, sizeof(buffer), "%d: %d %d %d %d %d %d\n", HAL_GetTick() - u32LastRead, mpu6050.Accelerometer_X, mpu6050.Accelerometer_Y, mpu6050.Accelerometer_Z, mpu6050.Gyroscope_X, mpu6050.Gyroscope_Y, mpu6050.Gyroscope_Z);
+			  HAL_UART_Transmit(&huart2, buffer, len, 10);
+			  u32LastRead = HAL_GetTick();
+		  }
+	  }
+  } else {
+	  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+	  HAL_Delay(100);
   }
 
   /* USER CODE END 2 */
@@ -209,6 +238,27 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+ /**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM16 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM16) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
