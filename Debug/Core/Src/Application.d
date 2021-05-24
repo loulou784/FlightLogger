@@ -1,4 +1,5 @@
-Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
+Core/Src/Application.o: ../Core/Src/Application.c \
+ ../Core/Inc/Application.h ../Core/Inc/main.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h \
  ../Core/Inc/stm32l4xx_hal_conf.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc.h \
@@ -33,13 +34,13 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h \
  ../FATFS/App/fatfs.h ../Middlewares/Third_Party/FatFs/src/ff.h \
  ../Middlewares/Third_Party/FatFs/src/integer.h ../FATFS/Target/ffconf.h \
- ../Middlewares/Third_Party/FatFs/src/ff_gen_drv.h \
+ ../Core/Inc/main.h ../Middlewares/Third_Party/FatFs/src/ff_gen_drv.h \
  ../Middlewares/Third_Party/FatFs/src/diskio.h \
  ../Middlewares/Third_Party/FatFs/src/ff.h ../FATFS/Target/user_diskio.h \
- ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/spi.h \
- ../Core/Inc/usart.h ../Core/Inc/gpio.h ../Core/Inc/sd_hal_mpu6050.h \
- ../Core/Inc/Application.h ../Core/Inc/i2c.h ../Core/Inc/usart.h \
- ../Core/Inc/gpio.h ../Core/Inc/sd_hal_mpu6050.h
+ ../Core/Inc/i2c.h ../Core/Inc/usart.h ../Core/Inc/gpio.h \
+ ../Core/Inc/sd_hal_mpu6050.h
+
+../Core/Inc/Application.h:
 
 ../Core/Inc/main.h:
 
@@ -115,6 +116,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 
 ../FATFS/Target/ffconf.h:
 
+../Core/Inc/main.h:
+
 ../Middlewares/Third_Party/FatFs/src/ff_gen_drv.h:
 
 ../Middlewares/Third_Party/FatFs/src/diskio.h:
@@ -122,20 +125,6 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Middlewares/Third_Party/FatFs/src/ff.h:
 
 ../FATFS/Target/user_diskio.h:
-
-../Core/Inc/i2c.h:
-
-../Core/Inc/main.h:
-
-../Core/Inc/spi.h:
-
-../Core/Inc/usart.h:
-
-../Core/Inc/gpio.h:
-
-../Core/Inc/sd_hal_mpu6050.h:
-
-../Core/Inc/Application.h:
 
 ../Core/Inc/i2c.h:
 

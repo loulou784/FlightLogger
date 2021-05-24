@@ -29,9 +29,9 @@
 /* USER CODE BEGIN Includes */
 #include <stdint.h>
 #include <stdbool.h>
-#include "fatfs.h"
 #include "sd_hal_mpu6050.h"
 #include "string.h"
+#include "Application.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,11 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-bool bSDPresent = false;
-FATFS FatFs;
-FRESULT fResult;
-SD_MPU6050 mpu6050;
-SD_MPU6050_Result mpuResult;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -101,62 +97,10 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI1_Init();
   MX_FATFS_Init();
+  MX_SPI3_Init();
   /* USER CODE BEGIN 2 */
 
-  /*
-   * Tests SD card peripheral
-   */
-
-  /*
-  // Mount SD Card
-  if(FR_OK == f_mount(&FatFs, "", 1)) {
-	bSDPresent = true;
-  }
-
-  if(bSDPresent == true) {
-    FIL fp;
-    // Open the file for writting
-    fResult = f_open(&fp, "testFile.txt", FA_OPEN_ALWAYS | FA_READ | FA_WRITE);
-
-    // Writing data to file
-    if(fResult == FR_OK) {
-      uint8_t u8BytesWritten = 0;
-      uint8_t u8ToWrite[] = "Hello file\n";
-   	  fResult = f_write(&fp, u8ToWrite, sizeof(u8ToWrite), &u8BytesWritten);
-    }
-
-    // Closing our written file
-    fResult = f_close(&fp);
-  }
-
-  // Unmount SD Card
-  if(bSDPresent == true) {
-	f_mount(NULL, "", 0);
-  }
-  */
-
-  /*
-   * Test MPU6050 peripheral
-   */
-  uint8_t buffer[128];
-  int len;
-  uint32_t u32LastRead = 0;
-  mpuResult = SD_MPU6050_Init(&hi2c1, &mpu6050, SD_MPU6050_Device_0, SD_MPU6050_Accelerometer_2G, SD_MPU6050_Gyroscope_250s);
-  SD_MPU6050_SetDataRate(&hi2c1, &mpu6050, SD_MPU6050_DataRate_1KHz);
-  HAL_Delay(500); // Wait init
-  if(mpuResult == SD_MPU6050_Result_Ok) {
-	  while(1) {
-		  mpuResult = SD_MPU6050_ReadAll(&hi2c1, &mpu6050);
-		  if(mpuResult == SD_MPU6050_Result_Ok) {
-			  len = snprintf(buffer, sizeof(buffer), "%d: %d %d %d %d %d %d\n", HAL_GetTick() - u32LastRead, mpu6050.Accelerometer_X, mpu6050.Accelerometer_Y, mpu6050.Accelerometer_Z, mpu6050.Gyroscope_X, mpu6050.Gyroscope_Y, mpu6050.Gyroscope_Z);
-			  HAL_UART_Transmit(&huart2, buffer, len, 10);
-			  u32LastRead = HAL_GetTick();
-		  }
-	  }
-  } else {
-	  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-	  HAL_Delay(100);
-  }
+  ApplicationInit();
 
   /* USER CODE END 2 */
 
@@ -167,6 +111,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  ApplicationTask();
   }
   /* USER CODE END 3 */
 }

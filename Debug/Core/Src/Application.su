@@ -1,0 +1,3 @@
+Application.c:31:6:unmountSD	8	static
+Application.c:36:6:ApplicationInit	16	static
+Application.c:97:6:ApplicationTask	40	static

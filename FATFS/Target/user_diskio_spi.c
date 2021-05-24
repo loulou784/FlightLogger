@@ -32,7 +32,7 @@ extern SPI_HandleTypeDef hspi1;
 
 /* Function prototypes */
 
-#define FCLK_SLOW() { hspi1.Instance->I2SPR = 256; }	/* Set SCLK = slow */
+//#define FCLK_SLOW() { hspi1.Instance->I2SPR = 256; }	/* Set SCLK = slow */
 //#define FCLK_FAST() { hspi1.Instance->I2SPR = 16; }	/* Set SCLK = fast */
 
 #define FCLK_SLOW() { }	/* Set SCLK = slow */
