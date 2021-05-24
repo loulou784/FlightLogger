@@ -119,8 +119,7 @@ void ApplicationTask() {
 			mpuResult = SD_MPU6050_ReadAll(&hi2c1, &mpu6050);
 			if(mpuResult == SD_MPU6050_Result_Ok) {
 				iBufferlen = snprintf(u8Buffer, sizeof(u8Buffer), "%d,%d,%d,%d,%d,%d\n",mpu6050.Accelerometer_X, mpu6050.Accelerometer_Y, mpu6050.Accelerometer_Z, mpu6050.Gyroscope_X, mpu6050.Gyroscope_Y, mpu6050.Gyroscope_Z);
-				// Write data to file, makes sizeof - 1 to remove '\0' character
-				fResult = f_write(&fp, u8Buffer, iBufferlen - 1, &u8BytesWritten);
+				fResult = f_write(&fp, u8Buffer, iBufferlen, &u8BytesWritten);
 			}
 
 			u32LogFileLineCounter++;
