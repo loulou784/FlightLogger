@@ -16,11 +16,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "sd_hal_mpu6050.h"
+#include "bmp280.h"
 #include "string.h"
 
-
-#define MAX_LINE_PER_FILE 100000
-
+//#define DEBUG_SERIAL
+#define MAX_LINE_PER_FILE 10000
 
 void ApplicationInit();
 void ApplicationTask();

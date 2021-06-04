@@ -36,10 +36,10 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FatFs/src/ff_gen_drv.h \
  ../Middlewares/Third_Party/FatFs/src/diskio.h \
  ../Middlewares/Third_Party/FatFs/src/ff.h ../FATFS/Target/user_diskio.h \
- ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/spi.h \
+ ../Core/Inc/i2c.h ../Core/Inc/main.h ../Core/Inc/spi.h ../Core/Inc/tim.h \
  ../Core/Inc/usart.h ../Core/Inc/gpio.h ../Core/Inc/sd_hal_mpu6050.h \
  ../Core/Inc/Application.h ../Core/Inc/i2c.h ../Core/Inc/usart.h \
- ../Core/Inc/gpio.h ../Core/Inc/sd_hal_mpu6050.h
+ ../Core/Inc/gpio.h ../Core/Inc/sd_hal_mpu6050.h ../Core/Inc/bmp280.h
 
 ../Core/Inc/main.h:
 
@@ -129,6 +129,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 
 ../Core/Inc/spi.h:
 
+../Core/Inc/tim.h:
+
 ../Core/Inc/usart.h:
 
 ../Core/Inc/gpio.h:
@@ -144,3 +146,5 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/gpio.h:
 
 ../Core/Inc/sd_hal_mpu6050.h:
+
+../Core/Inc/bmp280.h:

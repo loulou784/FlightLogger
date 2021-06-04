@@ -16,6 +16,8 @@ FRESULT fResult;
 FILINFO fInfo;
 DIR dir;
 
+BMP280_HandleTypedef bmp280;
+
 SD_MPU6050 mpu6050;
 SD_MPU6050_Result mpuResult;
 
@@ -27,6 +29,12 @@ int iBufferlen = 0;
 uint8_t u8FolderPath[10];
 int iFolderPathlen = 0;
 uint8_t u8BytesWritten = 0;
+int32_t i32Temperature;
+uint32_t u32Pressure;
+uint32_t u32Humidity;
+bool bmpResult;
+
+extern volatile uint32_t u32usTick;
 
 void unmountSD() {
 	bSDPresent = false;
@@ -84,17 +92,44 @@ void ApplicationInit() {
 	}
 
 	//Everything went right with the SD card, we can init the MPU6050
-	mpuResult = SD_MPU6050_Init(&hi2c1, &mpu6050, SD_MPU6050_Device_0, SD_MPU6050_Accelerometer_2G, SD_MPU6050_Gyroscope_250s);
-	SD_MPU6050_SetDataRate(&hi2c1, &mpu6050, SD_MPU6050_DataRate_1KHz);
+	mpuResult = SD_MPU6050_Init(&hi2c3, &mpu6050, SD_MPU6050_Device_0, SD_MPU6050_Accelerometer_16G, SD_MPU6050_Gyroscope_1000s);
+	SD_MPU6050_SetDataRate(&hi2c3, &mpu6050, SD_MPU6050_DataRate_1KHz);
 	HAL_Delay(500); // Wait init
 	if(mpuResult != SD_MPU6050_Result_Ok) {
 		unmountSD();
 		return;
 	}
 
+	bmp280_init_default_params(&bmp280.params);
+	bmp280.addr = BMP280_I2C_ADDRESS_0;
+	bmp280.i2c = &hi2c1;
+	bmp280_init(&bmp280, &bmp280.params);
+
 }
 
 void ApplicationTask() {
+
+#ifdef DEBUG_SERIAL
+
+	if(bSDPresent) {
+		HAL_UART_Transmit(&huart2, "SD Card OK\n\r", 12, 10);
+	} else {
+		HAL_UART_Transmit(&huart2, "SD Card ERROR\n\r", 15, 10);
+	}
+
+	while(1) {
+		mpuResult = SD_MPU6050_ReadAll(&hi2c3, &mpu6050);
+		bmpResult = bmp280_read_fixed(&bmp280, &i32Temperature, &u32Pressure, &u32Humidity);
+
+		if(mpuResult == SD_MPU6050_Result_Ok && bmpResult == true) {
+			iBufferlen = snprintf(u8Buffer, sizeof(u8Buffer), "%lu,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", HAL_GetTick(), mpu6050.Accelerometer_X, mpu6050.Accelerometer_Y, mpu6050.Accelerometer_Z, mpu6050.Gyroscope_X, mpu6050.Gyroscope_Y, mpu6050.Gyroscope_Z, i32Temperature, u32Pressure, u32Humidity);
+			HAL_UART_Transmit(&huart2, u8Buffer,iBufferlen, 10);
+		}
+
+	}
+
+#endif
+
 	if(bSDPresent) {
 
 		if(bFileIsOpen == false) {
@@ -116,10 +151,13 @@ void ApplicationTask() {
 			bFileIsOpen = true;
 		} else {
 
-			mpuResult = SD_MPU6050_ReadAll(&hi2c1, &mpu6050);
-			if(mpuResult == SD_MPU6050_Result_Ok) {
-				iBufferlen = snprintf(u8Buffer, sizeof(u8Buffer), "%d,%d,%d,%d,%d,%d\n",mpu6050.Accelerometer_X, mpu6050.Accelerometer_Y, mpu6050.Accelerometer_Z, mpu6050.Gyroscope_X, mpu6050.Gyroscope_Y, mpu6050.Gyroscope_Z);
+			mpuResult = SD_MPU6050_ReadAll(&hi2c3, &mpu6050);
+			bmpResult = bmp280_read_fixed(&bmp280, &i32Temperature, &u32Pressure, &u32Humidity);
+
+			if(mpuResult == SD_MPU6050_Result_Ok && bmpResult == true) {
+				iBufferlen = snprintf(u8Buffer, sizeof(u8Buffer), "%lu,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", HAL_GetTick(), mpu6050.Accelerometer_X, mpu6050.Accelerometer_Y, mpu6050.Accelerometer_Z, mpu6050.Gyroscope_X, mpu6050.Gyroscope_Y, mpu6050.Gyroscope_Z, i32Temperature, u32Pressure, u32Humidity);
 				fResult = f_write(&fp, u8Buffer, iBufferlen, &u8BytesWritten);
+				HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 			}
 
 			u32LogFileLineCounter++;
