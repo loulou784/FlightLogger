@@ -22,7 +22,7 @@ SD_MPU6050 mpu6050;
 SD_MPU6050_Result mpuResult;
 
 uint8_t u8LogFolderIndex = 0;
-uint8_t u8LogFileIndex = 0;
+uint32_t u32LogFileIndex = 0;
 uint32_t u32LogFileLineCounter = 0;
 uint8_t u8Buffer[128];
 int iBufferlen = 0;
@@ -133,15 +133,8 @@ void ApplicationTask() {
 	if(bSDPresent) {
 
 		if(bFileIsOpen == false) {
-			if(u8LogFileIndex == 6) {
-				while(1) {
-					HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-					HAL_Delay(1000);
-				}
-			}
-
-			iBufferlen = snprintf(u8Buffer, sizeof(u8Buffer), "%s/%d.csv", u8FolderPath, u8LogFileIndex);
-			u8LogFileIndex++;
+			iBufferlen = snprintf(u8Buffer, sizeof(u8Buffer), "%s/%d.csv", u8FolderPath, u32LogFileIndex);
+			u32LogFileIndex++;
 			u32LogFileLineCounter = 0;
 			fResult = f_open(&fp, u8Buffer, FA_OPEN_ALWAYS | FA_READ | FA_WRITE);
 			if(fResult != FR_OK) {

@@ -20,7 +20,7 @@
 #include "string.h"
 
 //#define DEBUG_SERIAL
-#define MAX_LINE_PER_FILE 10000
+#define MAX_LINE_PER_FILE 100000
 
 void ApplicationInit();
 void ApplicationTask();
